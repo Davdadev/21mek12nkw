@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Safe AI Frontend</title>
+</head>
+<body>
+  <form id="aiForm">
+    <label>Prompt:</label>
+    <textarea id="prompt" required></textarea>
+    <button type="submit">Ask</button>
+  </form>
+  <div id="result"></div>
+  <script>
+    document.getElementById('aiForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const prompt = document.getElementById('prompt').value;
+      const resultDiv = document.getElementById('result');
+      resultDiv.textContent = 'Loading...';
+      try {
+        const res = await fetch('https://ai-backend-proxy.onrender.com/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        });
+        const data = await res.json();
+        if (data.result) {
+          resultDiv.textContent = data.result;
+        } else {
+          resultDiv.textContent = 'Error: ' + (data.error || 'Unknown error');
+        }
+      } catch (err) {
+        resultDiv.textContent = 'Error: ' + (err.message || err);
+      }
+    });
+  </script>
+</body>
+</html>
